@@ -1,33 +1,30 @@
 const request = require('request');
 const fs = require('fs');
 
-request('http://www.example.edu/', (error, response, body) => {
-  if (error || response) {
-    console.log('error; process will terminate');
-    process.exit();
+const urlRequest = process.argv[2];
+const path = process.argv[3];
+
+request(urlRequest, (error, response, body) => {
+  if (response >= 400 || response === 'undefined') {
+    console.log('Please enter a valid url');
+    //process.exit();
+  } else {
+  fs.realpath(path, (error) => {
+    if (error) {
+      console.log('Invalid path to index file');
+      //process.exit();
+    } else {
+      fs.access(path, fs.F_OK, (err) => {
+        if (path) {
+          fs.writeFile(path, body, (err) => {
+            const bodyData = fs.statSync(path)
+            const bytes = bodyData['size']
+            console.log(`Download ${bytes} bytes from ${urlRequest} to ${path}`);
+          })
+        }
+      })
+    }
+  })
   }
-  fs.statSync(path[, options])#
-// History
-// path <string> | <Buffer> | <URL>
-// options <Object>
+  });
 
-// bigint <boolean> Whether the numeric values in the returned fs.Stats object should be bigint. Default: false.
-// Returns: <fs.Stats></fs.Stats>
-  
-});
-
-//GET http://developer.mozilla.org/en-US/docs/Web/HTTP/Messages HTTP/1.1
-//request('http://www.example.edu/?GET ./index.html HTTP/1.0
-
-
-// defaults to `GET` method if none is passed
-//From Hafiz's lecture:
-// httpClient('http://lighthouselabs.ca', (err, resp, body) => {
-//   if (err) {
-//     return console.log('err :>> ', err);
-//   }
-//   console.log('body :>> ', body);
-// })
-  // console.log('error:', error); // Print the error if one occurred
-  // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  // console.log('body:', body); // Print the HTML for the Google homepage.
